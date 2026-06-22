@@ -3,6 +3,20 @@ from typing import Optional
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QApplication
 
+from phibuilder import PhiBuilder
+
+
+THEMES_CONFIG = [
+    ("ocean",   "Océan",      "#0D47A1", False),
+    ("foret",   "Forêt",      "#2E7D32", False),
+    ("nuit",    "Nuit",       "#4A148C", True),
+    ("lave",    "Lave",       "#C62828", True),
+    ("sable",   "Sable",      "#E65100", False),
+]
+
+_SEED_MAP = {k: s for k, _, s, _ in THEMES_CONFIG}
+_IS_DARK_MAP = {k: d for k, _, _, d in THEMES_CONFIG}
+
 
 @dataclass
 class Palette:
@@ -35,6 +49,55 @@ class Palette:
     inactive: str = '#90A4AE'
 
 
+_THEME_PALETTES = {
+    "ocean": Palette(
+        primary='#0D47A1', on_primary='#FFFFFF', primary_container='#90CAF9',
+        secondary='#00897B', on_secondary='#FFFFFF', secondary_container='#B2DFDB',
+        tertiary='#E65100', on_tertiary='#FFFFFF', tertiary_container='#FFCC80',
+        error='#C62828', on_error='#FFFFFF', error_container='#FFCDD2', success='#2E7D32',
+        card_bg='#FFFFFF', card_hover='#E3F2FD',
+        header_bg='#0D47A1', header_text='#FFFFFF',
+        active='#0D47A1', inactive='#90A4AE',
+    ),
+    "foret": Palette(
+        primary='#2E7D32', on_primary='#FFFFFF', primary_container='#A5D6A7',
+        secondary='#00695C', on_secondary='#FFFFFF', secondary_container='#B2DFDB',
+        tertiary='#E65100', on_tertiary='#FFFFFF', tertiary_container='#FFCC80',
+        error='#C62828', on_error='#FFFFFF', error_container='#FFCDD2', success='#1B5E20',
+        card_bg='#FFFFFF', card_hover='#E8F5E9',
+        header_bg='#2E7D32', header_text='#FFFFFF',
+        active='#2E7D32', inactive='#81C784',
+    ),
+    "nuit": Palette(
+        primary='#CE93D8', on_primary='#3E1A4A', primary_container='#6A1B9A',
+        secondary='#B39DDB', on_secondary='#2C1B4A', secondary_container='#5E35B1',
+        tertiary='#FFAB91', on_tertiary='#4A1C0E', tertiary_container='#D84315',
+        error='#FFB4AB', on_error='#690005', error_container='#93000A', success='#81C784',
+        card_bg='#2D2D3A', card_hover='#3D3D4D',
+        header_bg='#6A1B9A', header_text='#F3E5F5',
+        active='#CE93D8', inactive='#8E8E99',
+    ),
+    "lave": Palette(
+        primary='#EF9A9A', on_primary='#5C1A1A', primary_container='#B71C1C',
+        secondary='#FFAB91', on_secondary='#4A1C0E', secondary_container='#D84315',
+        tertiary='#FFCC80', on_tertiary='#4A3200', tertiary_container='#E65100',
+        error='#FFB4AB', on_error='#690005', error_container='#93000A', success='#81C784',
+        card_bg='#2A1C1C', card_hover='#3D2A2A',
+        header_bg='#B71C1C', header_text='#FFCDD2',
+        active='#EF9A9A', inactive='#8E7878',
+    ),
+    "sable": Palette(
+        primary='#E65100', on_primary='#FFFFFF', primary_container='#FFCC80',
+        secondary='#F9A825', on_secondary='#3E2C00', secondary_container='#FDD835',
+        tertiary='#2E7D32', on_tertiary='#FFFFFF', tertiary_container='#A5D6A7',
+        error='#C62828', on_error='#FFFFFF', error_container='#FFCDD2', success='#1B5E20',
+        card_bg='#FFF8E1', card_hover='#FFECB3',
+        header_bg='#E65100', header_text='#FFFFFF',
+        active='#E65100', inactive='#A1887F',
+    ),
+}
+
+
 @dataclass
 class FontScale:
     base: int = 12
@@ -55,61 +118,21 @@ class Theme:
 
 _BUILTIN_THEMES: dict[str, Theme] = {}
 
-
 def _init_themes():
     if _BUILTIN_THEMES:
         return
-
-    _BUILTIN_THEMES['material_light'] = Theme(
-        name='material_light',
-        label='Material Light',
-        palette=Palette(
-            primary='#0D47A1', on_primary='#FFFFFF', primary_container='#90CAF9',
-            secondary='#00897B', on_secondary='#FFFFFF', secondary_container='#B2DFDB',
-            tertiary='#E65100', on_tertiary='#FFFFFF', tertiary_container='#FFCC80',
-            error='#C62828', on_error='#FFFFFF', error_container='#FFCDD2', success='#2E7D32',
-            card_bg='#FFFFFF', card_hover='#E3F2FD',
-            header_bg='#0D47A1', header_text='#FFFFFF',
-            active='#0D47A1', inactive='#90A4AE',
-        ),
-    )
-
-    _BUILTIN_THEMES['material_dark'] = Theme(
-        name='material_dark',
-        label='Material Dark',
-        palette=Palette(
-            primary='#9ECAFF', on_primary='#003258', primary_container='#00497D',
-            secondary='#CCC2DC', on_secondary='#332D41', secondary_container='#4A4458',
-            tertiary='#EFB8C8', on_tertiary='#492532', tertiary_container='#633B48',
-            error='#FFB4AB', on_error='#690005', error_container='#93000A', success='#81C784',
-            card_bg='#2D2D31', card_hover='#3D3D42',
-            header_bg='#4A4458', header_text='#E8DEF8',
-            active='#9ECAFF', inactive='#8E9099',
-        ),
-    )
-
-    _BUILTIN_THEMES['material_contrast'] = Theme(
-        name='material_contrast',
-        label='Material Contrast',
-        palette=Palette(
-            primary='#003258', on_primary='#FFFFFF', primary_container='#D1E4FF',
-            secondary='#1D192B', on_secondary='#FFFFFF', secondary_container='#E8DEF8',
-            tertiary='#7D5260', on_tertiary='#FFFFFF', tertiary_container='#FFD8E4',
-            error='#93000A', on_error='#FFFFFF', error_container='#FFDAD6', success='#1B5E20',
-            card_bg='#FFFFFF', card_hover='#DEE3E9',
-            header_bg='#1D192B', header_text='#FFFFFF',
-            active='#003258', inactive='#73777E',
-        ),
-    )
+    for key, label, seed, is_dark in THEMES_CONFIG:
+        _BUILTIN_THEMES[key] = Theme(key, label, _THEME_PALETTES[key])
 
 
 class ThemeManager:
     def __init__(self):
         _init_themes()
         self._themes = _BUILTIN_THEMES
-        self._active: str = 'material_light'
+        self._active: str = 'ocean'
         self._theme: Theme = self._themes[self._active]
         self._app: Optional[QApplication] = None
+        self._phibuilder: Optional[PhiBuilder] = None
 
     @property
     def theme(self) -> Theme:
@@ -126,10 +149,15 @@ class ThemeManager:
     def names(self) -> list[tuple[str, str]]:
         return [(k, v.label) for k, v in self._themes.items()]
 
+    def get_palette(self, name: str) -> Optional[Palette]:
+        t = self._themes.get(name)
+        return t.palette if t else None
+
     def set_active(self, name: str) -> bool:
         if name in self._themes:
             self._active = name
             self._theme = self._themes[name]
+            self._sync_phibuilder()
             self._reapply()
             return True
         return False
@@ -142,11 +170,26 @@ class ThemeManager:
 
     def bind(self, app: QApplication) -> None:
         self._app = app
+        self._phibuilder = PhiBuilder(
+            seed_color=_SEED_MAP.get(self._active, "#0D47A1"),
+            is_dark=_IS_DARK_MAP.get(self._active, False),
+        )
         self._reapply()
 
+    def _sync_phibuilder(self):
+        if self._phibuilder is None:
+            return
+        self._phibuilder.set_seed_color(_SEED_MAP.get(self._active, "#0D47A1"))
+        self._phibuilder.set_dark_mode(_IS_DARK_MAP.get(self._active, False))
+
     def _reapply(self):
-        if self._app is not None:
-            self._app.setStyleSheet(self._generate_global_qss())
+        if self._app is None:
+            return
+        combined = ""
+        if self._phibuilder is not None:
+            combined += self._phibuilder.qss + "\n"
+        combined += self._generate_global_qss()
+        self._app.setStyleSheet(combined)
 
     def _generate_global_qss(self) -> str:
         p = self._theme.palette
