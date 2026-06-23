@@ -36,6 +36,10 @@ class Translator:
     def set_language(self, lang: str):
         self._lang = lang
 
+    @staticmethod
+    def l10n_dir() -> str:
+        return os.path.dirname(os.path.abspath(__file__))
+
     def t(self, key: str, default: str = "") -> str:
         return self._strings.get(key, default or key)
 
