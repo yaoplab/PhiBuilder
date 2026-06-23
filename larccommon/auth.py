@@ -27,21 +27,23 @@ def _deduce_role_superviseur(is_dir: bool, is_coord: bool, is_sup: bool) -> User
 
 def _load_active_term(cur) -> Tuple[int, str]:
     try:
+        # Langue du trimestre : 2 = fran?is (TODO: utiliser la preference utilisateur depuis DB)
+        lang = 2
         # Priorite 1 : terme defini par academicyear
         cur.execute("""
             SELECT t.id, t.label FROM larcauth_term t, larcauth_academicyear ay
             WHERE ay.s_id = 1 AND t.trim = ay.current_term_number
-              AND t.fk_language = 2
+              AND t.fk_language = %s
             LIMIT 1
-        """)
+        """, (lang,))
         row = cur.fetchone()
         if row:
             return row[0], row[1]
-        # Fallback : terme avec fk_language=2 le plus recent
+        # Fallback : terme francais le plus recent
         cur.execute("""
             SELECT id, label FROM larcauth_term
-            WHERE fk_language = 2 ORDER BY id DESC LIMIT 1
-        """)
+            WHERE fk_language = %s ORDER BY id DESC LIMIT 1
+        """, (lang,))
         row = cur.fetchone()
         if row:
             return row[0], row[1]
