@@ -8676,3 +8676,23 @@ LINE 1: SELECT key, value FROM larcauth_config
 LINE 1: SELECT key, value FROM larcauth_config
                                ^
 ), fallback valeurs par defaut
+[2026-06-23 11:20:42] connect_intranet: connexion réussie
+[2026-06-23 11:20:42] AppConfig: echec chargement (ERREUR:  la relation « larcauth_config » n'existe pas
+LINE 1: SELECT key, value FROM larcauth_config
+                               ^
+), fallback valeurs par defaut
+[2026-06-23 11:20:56] connect_intranet: connexion réussie
+[2026-06-23 11:20:56] AppConfig: echec chargement (ERREUR:  la relation « larcauth_config » n'existe pas
+LINE 1: SELECT key, value FROM larcauth_config
+                               ^
+), fallback valeurs par defaut
+[2026-06-23 11:21:07] connect_intranet: connexion réussie
+[2026-06-23 11:21:07] AppConfig: echec chargement (ERREUR:  la relation « larcauth_config » n'existe pas
+LINE 1: SELECT key, value FROM larcauth_config
+                               ^
+), fallback valeurs par defaut
+[2026-06-23 11:28:53] connect_intranet: connexion réussie
+[2026-06-23 11:28:53] AppConfig: echec chargement (ERREUR:  la relation « larcauth_config » n'existe pas
+LINE 1: SELECT key, value FROM larcauth_config
+                               ^
+), fallback valeurs par defaut
