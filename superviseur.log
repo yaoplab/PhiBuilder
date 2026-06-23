@@ -8696,3 +8696,28 @@ LINE 1: SELECT key, value FROM larcauth_config
 LINE 1: SELECT key, value FROM larcauth_config
                                ^
 ), fallback valeurs par defaut
+[2026-06-23 12:01:02] connect_intranet: connexion réussie
+[2026-06-23 12:01:02] AppConfig: echec chargement (ERREUR:  la relation « larcauth_config » n'existe pas
+LINE 1: SELECT key, value FROM larcauth_config
+                               ^
+), fallback valeurs par defaut
+[2026-06-23 12:01:15] connect_intranet: connexion réussie
+[2026-06-23 12:01:15] AppConfig: echec chargement (ERREUR:  la relation « larcauth_config » n'existe pas
+LINE 1: SELECT key, value FROM larcauth_config
+                               ^
+), fallback valeurs par defaut
+[2026-06-23 12:01:41] connect_intranet: connexion réussie
+[2026-06-23 12:01:41] Connexion Intranet : Patrice LABONNE (COORD)
+[2026-06-23 12:01:43] AppConfig: echec chargement (ERREUR:  la relation « larcauth_config » n'existe pas
+LINE 1: SELECT key, value FROM larcauth_config
+                               ^
+), fallback valeurs par defaut
+[2026-06-23 12:01:43] AppConfig: echec chargement (ERREUR:  la relation « larcauth_config » n'existe pas
+LINE 1: SELECT key, value FROM larcauth_config
+                               ^
+), fallback valeurs par defaut
+[2026-06-23 12:01:45] DataLoader.get_unit_periods: ERREUR:  la colonne up.fk_language n'existe pas
+LINE 3:                        up.fk_language
+                               ^
+HINT:  Peut-être que vous souhaitiez référencer la colonne « up.fk_language_id ».
+
