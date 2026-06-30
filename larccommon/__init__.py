@@ -1,5 +1,5 @@
 from larccommon.database import Database, DBMode
-from larccommon.auth import OAuth2Manager, _deduce_role_superviseur, _load_active_term
+from larccommon.auth import OAuth2Manager, AuthManager, _deduce_role_superviseur, _deduce_role, _load_active_term, _sha256_hex
 from larccommon.session import Session, UserRole, ConnMode, AuthResult
 from larccommon.config_loader import find_cfg
 from larccommon.app_config import AppConfig

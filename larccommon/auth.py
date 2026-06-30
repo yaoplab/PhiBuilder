@@ -52,6 +52,153 @@ def _load_active_term(cur) -> Tuple[int, str]:
     return 0, ''
 
 
+def _sha256_hex(s: str) -> str:
+    return hashlib.sha256(s.encode('utf-8')).hexdigest()
+
+
+def _deduce_role(is_adm: bool = False, is_coord: bool = False,
+                 is_sup: bool = False, is_secretary: bool = False) -> UserRole:
+    if is_adm: return UserRole.ADMIN
+    if is_coord: return UserRole.COORD
+    if is_secretary: return UserRole.SECR
+    if is_sup: return UserRole.SUPERVISEUR
+    return UserRole.PROF
+
+
+class AuthManager:
+
+    @classmethod
+    def auth_intranet(cls, email: str, password: str) -> Tuple[bool, AuthResult, str]:
+        conn = db.server_conn
+        if conn is None or db.server_mode != DBMode.INTRANET:
+            return False, AuthResult(), "Non connect\xe9 \xe0 l'intranet"
+
+        pass_hash = _sha256_hex(password)
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT id, email, last_name, first_name, password "
+                    "FROM larcauth_aecuser WHERE LOWER(email) = %s",
+                    (email.strip().lower(),)
+                )
+                row = cur.fetchone()
+            if row is None:
+                return False, AuthResult(), 'Utilisateur introuvable'
+            stored_hash = row[4]
+            if stored_hash and stored_hash != pass_hash:
+                return False, AuthResult(), 'Mot de passe incorrect'
+
+            user_id = row[0]
+            full_name = f"{row[3]} {row[2]}".strip()
+
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT is_adm, is_coordonator, is_secretary, "
+                    "type_director, type_coordonator, type_supervisor "
+                    "FROM larcauth_teachadm WHERE aecuser_ptr_id = %s",
+                    (user_id,)
+                )
+                tadm = cur.fetchone()
+            if tadm is None:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        "SELECT type_director, type_coordonator, type_supervisor "
+                        "FROM larcauth_aecuser WHERE id = %s",
+                        (user_id,)
+                    )
+                    roles = cur.fetchone()
+                    if roles:
+                        role = _deduce_role(is_adm=False, is_coord=bool(roles[1]),
+                                            is_sup=bool(roles[2]))
+                    else:
+                        role = UserRole.PROF
+            else:
+                role = _deduce_role(is_adm=bool(tadm[0]), is_coord=bool(tadm[1]),
+                                    is_secretary=bool(tadm[2]))
+
+            with conn.cursor() as cur:
+                term_id, term_label = _load_active_term(cur)
+
+            return True, AuthResult(
+                user_id=user_id, email=email.strip().lower(),
+                full_name=full_name, role=role,
+                term_id=term_id, term_label=term_label,
+            ), ''
+        except Exception as e:
+            return False, AuthResult(), str(e)
+
+    @classmethod
+    def auth_pin(cls, email: str, pin: str, local_conn=None) -> Tuple[bool, AuthResult, str]:
+        if local_conn is None:
+            return False, AuthResult(), 'Base locale non disponible'
+        pin_hash = _sha256_hex(pin)
+        try:
+            row = local_conn.execute(
+                "SELECT user_id, email, full_name, role, term_id, term_label "
+                "FROM session_cache WHERE LOWER(email) = ? AND pin_hash = ?",
+                (email.strip().lower(), pin_hash)
+            ).fetchone()
+            if row is None:
+                return False, AuthResult(), 'Email ou PIN incorrect'
+            return True, AuthResult(
+                user_id=int(row['user_id']),
+                email=row['email'],
+                full_name=row['full_name'],
+                role=UserRole(row['role']),
+                term_id=int(row['term_id'] or 0),
+                term_label=row['term_label'] or '',
+            ), ''
+        except Exception as e:
+            return False, AuthResult(), str(e)
+
+    @classmethod
+    def check_teacher_exists(cls, email: str) -> Tuple[bool, dict]:
+        conn = db.server_conn
+        if conn is None or db.server_mode not in (DBMode.INTRANET, DBMode.CLOUD):
+            return False, {}
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT id, first_name, last_name, email "
+                    "FROM public.larcauth_aecuser WHERE email = %s",
+                    (email,)
+                )
+                user_row = cur.fetchone()
+                if user_row is None:
+                    return False, {}
+                user_id = user_row[0]
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT 1 FROM public.larcauth_teachadm WHERE aecuser_ptr_id = %s",
+                    (user_id,)
+                )
+                if cur.fetchone() is None:
+                    return False, {}
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT ay.label, ay.current_term_number, tm.label
+                    FROM public.larcauth_academicyear ay
+                    JOIN public.larcauth_term tm ON tm.trim = ay.current_term_number
+                    WHERE ay.current_term_number IS NOT NULL
+                    ORDER BY ay.start_date DESC LIMIT 1
+                """)
+                year_row = cur.fetchone()
+                if year_row is None:
+                    return False, {}
+            return True, {
+                'user_id': user_id,
+                'first_name': user_row[1],
+                'last_name': user_row[2],
+                'email': user_row[3],
+                'annee_scolaire': year_row[0],
+                'trimestre_courant': year_row[1],
+                'trimestre_label': year_row[2],
+            }
+        except Exception as e:
+            log(f"AuthManager.check_teacher_exists: {e}")
+            return False, {}
+
+
 # ---------------------------------------------------------------------------
 # OAuth2 PKCE — Google Workspace @arc-en-ciel.org
 # ---------------------------------------------------------------------------

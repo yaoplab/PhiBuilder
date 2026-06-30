@@ -7,7 +7,9 @@ from typing import Optional
 
 class UserRole(Enum):
     SUPERVISEUR = 'SUPERVISEUR'
+    PROF        = 'PROF'
     COORD       = 'COORD'
+    SECR        = 'SECR'
     ADMIN       = 'ADMIN'
 
 
