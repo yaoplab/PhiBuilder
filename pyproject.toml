@@ -14,5 +14,29 @@ dependencies = [
     "psycopg2-binary>=2.9",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=9",
+    "pytest-qt>=4",
+    "ruff>=0.15",
+    "black>=26",
+    "pre-commit>=4",
+]
+
 [tool.setuptools.packages.find]
 include = ["larccommon*", "phibuilder*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
