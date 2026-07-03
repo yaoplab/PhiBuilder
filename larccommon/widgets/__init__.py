@@ -12,6 +12,7 @@ from larccommon.widgets.card_grid import fill_cards_grid
 from larccommon.widgets.file_panel import FilePanel
 from larccommon.widgets.file_resolver import FileResolver
 from larccommon.widgets.file_viewer import FileViewer
+from larccommon.widgets.table_settings import TableSettings
 
 __all__ = [
     "CardConfig",
@@ -26,4 +27,5 @@ __all__ = [
     "FileViewer",
     "FilePanel",
     "FileResolver",
+    "TableSettings",
 ]

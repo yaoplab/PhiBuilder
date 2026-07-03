@@ -27,6 +27,7 @@ from larccommon.widgets import (
     FileResolver,
     FileViewer,
     StudentCard,
+    TableSettings,
     fill_cards_grid,
     make_avatar,
 )
@@ -74,4 +75,5 @@ __all__ = [
     "FileViewer",
     "FilePanel",
     "FileResolver",
+    "TableSettings",
 ]
