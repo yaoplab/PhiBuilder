@@ -6,9 +6,11 @@ from larccommon.app_config import AppConfig
 from larccommon.logger import log, set_log_to_file, get_log_path, set_log_filename
 from larccommon.network import NetworkMode, detect_network
 from larccommon.photos import get_photo_path, ensure_cached, get_uncached_ids
-from larccommon.theme import ThemeManager, Theme, Palette, FontScale
+from larccommon.theme import ThemeManager, Theme, Palette, FontScale, DesignTokens, QssHelper
 from larccommon.event_helpers import event_icon, event_color
 from larccommon.l10n import Translator, _
+from larccommon.widgets import (StudentCard, CardConfig, make_avatar, fill_cards_grid,
+                                PHI_COMPACT, PHI_MEDIUM, PHI_LARGE, CARD_THEMES, DEFAULT_CONFIG)
 
 __all__ = [
     "Database", "DBMode", "OAuth2Manager", "_deduce_role_superviseur", "_load_active_term",
@@ -16,7 +18,9 @@ __all__ = [
     "log", "set_log_to_file", "get_log_path", "set_log_filename",
     "NetworkMode", "detect_network",
     "get_photo_path", "ensure_cached", "get_uncached_ids",
-    "ThemeManager", "Theme", "Palette", "FontScale",
+    "ThemeManager", "Theme", "Palette", "FontScale", "DesignTokens", "QssHelper",
     "event_icon", "event_color",
     "Translator", "_",
+    "StudentCard", "CardConfig", "make_avatar", "fill_cards_grid",
+    "PHI_COMPACT", "PHI_MEDIUM", "PHI_LARGE", "CARD_THEMES", "DEFAULT_CONFIG",
 ]

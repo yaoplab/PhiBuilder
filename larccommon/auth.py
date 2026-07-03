@@ -27,26 +27,21 @@ def _deduce_role_superviseur(is_dir: bool, is_coord: bool, is_sup: bool) -> User
 
 def _load_active_term(cur) -> Tuple[int, str]:
     try:
-        # Langue du trimestre : 2 = fran?is (TODO: utiliser la preference utilisateur depuis DB)
-        lang = 2
-        # Priorite 1 : terme defini par academicyear
         cur.execute("""
             SELECT t.id, t.label FROM larcauth_term t, larcauth_academicyear ay
             WHERE ay.s_id = 1 AND t.trim = ay.current_term_number
-              AND t.fk_language = %s
             LIMIT 1
-        """, (lang,))
+        """)
         row = cur.fetchone()
         if row:
-            return row[0], row[1]
-        # Fallback : terme francais le plus recent
+            return int(row[0]), row[1]
+        # Fallback : dernier terme
         cur.execute("""
-            SELECT id, label FROM larcauth_term
-            WHERE fk_language = %s ORDER BY id DESC LIMIT 1
-        """, (lang,))
+            SELECT id, label FROM larcauth_term ORDER BY id DESC LIMIT 1
+        """)
         row = cur.fetchone()
         if row:
-            return row[0], row[1]
+            return int(row[0]), row[1]
     except Exception:
         pass
     return 0, ''
@@ -93,36 +88,28 @@ class AuthManager:
 
             with conn.cursor() as cur:
                 cur.execute(
-                    "SELECT is_adm, is_coordonator, is_secretary, "
-                    "type_director, type_coordonator, type_supervisor "
-                    "FROM larcauth_teachadm WHERE aecuser_ptr_id = %s",
+                    "SELECT type_director, type_coordonator, type_supervisor, "
+                    "type_secretary FROM larcauth_aecuser WHERE id = %s",
                     (user_id,)
                 )
-                tadm = cur.fetchone()
-            if tadm is None:
-                with conn.cursor() as cur:
-                    cur.execute(
-                        "SELECT type_director, type_coordonator, type_supervisor "
-                        "FROM larcauth_aecuser WHERE id = %s",
-                        (user_id,)
-                    )
-                    roles = cur.fetchone()
-                    if roles:
-                        role = _deduce_role(is_adm=False, is_coord=bool(roles[1]),
-                                            is_sup=bool(roles[2]))
-                    else:
-                        role = UserRole.PROF
+                roles = cur.fetchone()
+            if roles and any(roles):
+                role = _deduce_role(is_adm=bool(roles[0]), is_coord=bool(roles[1]),
+                                    is_sup=bool(roles[2]), is_secretary=bool(roles[3]))
             else:
-                role = _deduce_role(is_adm=bool(tadm[0]), is_coord=bool(tadm[1]),
-                                    is_secretary=bool(tadm[2]))
+                role = UserRole.PROF
 
             with conn.cursor() as cur:
                 term_id, term_label = _load_active_term(cur)
+                cur.execute("SELECT fk_language FROM larcauth_aecuser WHERE id = %s", (user_id,))
+                rr = cur.fetchone()
+                fk_lang = int(rr[0]) if rr else 2
 
             return True, AuthResult(
                 user_id=user_id, email=email.strip().lower(),
                 full_name=full_name, role=role,
                 term_id=term_id, term_label=term_label,
+                fk_language=fk_lang,
             ), ''
         except Exception as e:
             return False, AuthResult(), str(e)
@@ -342,10 +329,14 @@ class OAuth2Manager:
 
             with conn.cursor() as cur:
                 term_id, term_label = _load_active_term(cur)
+                cur.execute("SELECT fk_language FROM larcauth_aecuser WHERE id = %s", (user_id,))
+                rr = cur.fetchone()
+                fk_lang = int(rr[0]) if rr else 2
 
             return True, AuthResult(
                 user_id=user_id, email=email, full_name=full_name,
                 role=role, term_id=term_id, term_label=term_label,
+                fk_language=fk_lang,
             ), ''
         except Exception as e:
             return False, AuthResult(), str(e)

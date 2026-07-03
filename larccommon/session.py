@@ -27,6 +27,7 @@ class AuthResult:
     role      : UserRole = field(default_factory=lambda: UserRole.ADMIN)
     term_id   : int      = 0
     term_label: str      = ''
+    fk_language: int     = 2
 
 
 @dataclass
@@ -40,6 +41,10 @@ class Session:
     instance_dir     : str                = ''
     term_id          : int                = 0
     term_label       : str                = ''
+    fk_language      : int                = 2
+    theme_pref       : str                = 'blue'
+    card_theme       : str                = 'medium'
+    type_flags       : dict               = field(default_factory=dict)
 
 
 session: Session = Session(

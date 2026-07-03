@@ -10,9 +10,9 @@ class AppConfig:
 
     DEFAULTS = {
         'photos_dir': os.path.normpath(
-            os.path.join(_here, '..', 'photos')),
+            os.path.join(_here, '..', '..', 'LarcSuperviseur', 'photos')),
         'photos_cache_dir': os.path.normpath(
-            os.path.join(_here, '..', 'photos', 'cache')),
+            os.path.join(_here, '..', '..', 'LarcSuperviseur', 'photos', 'cache')),
     }
 
     def __init__(self):
