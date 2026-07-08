@@ -684,5 +684,6 @@
   "topbar.loading_events": "⟳ Chargement événements...",
   "topbar.loading_initial": "⟳ Chargement initial...",
   "topbar.loading_stats": "⟳ Chargement statistiques...",
-  "topbar.loading_students": "⟳ Chargement élèves..."
+  "topbar.loading_students": "⟳ Chargement élèves...",
+  "kpi.period": "Période"
 }
