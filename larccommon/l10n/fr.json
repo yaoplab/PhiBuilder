@@ -685,5 +685,6 @@
   "topbar.loading_initial": "⟳ Chargement initial...",
   "topbar.loading_stats": "⟳ Chargement statistiques...",
   "topbar.loading_students": "⟳ Chargement élèves...",
-  "kpi.period": "Période"
+  "kpi.period": "Période",
+  "topbar.restart_needed": "Redémarrez l'application pour appliquer le changement de langue."
 }
