@@ -18,6 +18,8 @@ class M3Button(QPushButton):
         self.setCursor(Qt.PointingHandCursor)
         self._update_style()
     def _update_style(self):
+        if self._theme is None:
+            return
         t, c = self._theme, self._theme.colors
         p, h, r = t.spacing.spacing(SpacingToken.MD), 40, t.spacing.spacing(SpacingToken.SM)
         styles = {

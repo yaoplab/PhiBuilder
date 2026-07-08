@@ -15,6 +15,8 @@ class M3ListWidget(QListWidget):
         self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self._update_style()
     def _update_style(self):
+        if self._theme is None:
+            return
         c, s = self._theme.colors, self._theme.spacing
         self.setStyleSheet(f"""
 M3ListWidget {{ background-color: {c.surface}; border: 1px solid {c.outline}; border-radius: {s.spacing(SpacingToken.SM)}px;

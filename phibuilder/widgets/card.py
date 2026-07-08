@@ -16,6 +16,8 @@ class M3Card(QFrame):
         self._layout.setContentsMargins(16, 16, 16, 16)
         self._update_style()
     def _update_style(self):
+        if self._theme is None:
+            return
         c, r = self._theme.colors, self._shape.radius.top_left
         if self._variant == CardVariant.FILLED:
             bg, brd = c.surface_variant, "none"

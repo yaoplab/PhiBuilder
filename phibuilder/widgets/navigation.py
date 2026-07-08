@@ -28,6 +28,8 @@ class M3NavigationBar(QFrame):
             layout.addWidget(btn)
         self._update_style()
     def _update_style(self):
+        if self._theme is None:
+            return
         c, t, s = self._theme.colors, self._theme.typo, self._theme.spacing
         for i, btn in enumerate(self._buttons):
             is_active = i == self._current_index
@@ -75,6 +77,8 @@ class M3Sidebar(QFrame):
         layout.addStretch()
         self._update_style()
     def _update_style(self):
+        if self._theme is None:
+            return
         c, t, s = self._theme.colors, self._theme.typo, self._theme.spacing
         for i, btn in enumerate(self._buttons):
             is_active = i == self._current_index

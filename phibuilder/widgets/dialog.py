@@ -6,13 +6,15 @@ from phibuilder.widgets.button import M3Button, ButtonVariant
 
 class M3Dialog(QDialog):
     confirmed = Signal(); cancelled = Signal()
-    def __init__(self, title: str = "", message: str = "",
-                 theme: Theme | None = None, parent=None):
+    def __init__(self, parent=None, title: str = "", message: str = "",
+                 theme: Theme | None = None):
         super().__init__(parent)
         self._theme = theme
         self.setWindowTitle(title)
         self.setMinimumWidth(400)
         self.setModal(True)
+        if theme is None:
+            return
         c, s = theme.colors, theme.spacing
         self.setStyleSheet(f"M3Dialog {{ background-color: {c.surface}; border-radius: {s.spacing(SpacingToken.LG)}px; }}")
         layout = QVBoxLayout(self)

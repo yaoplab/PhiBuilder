@@ -4,6 +4,41 @@ from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QApplication
 
 from phibuilder import PhiBuilder
+from phibuilder.theme import Theme as PhiTheme, ThemeConfig
+from phibuilder.phi.scale import PhiScale, SpacingToken
+
+
+class _LarcM3Colors:
+    """Mappe Palette (LarcCommon) vers les propriétés M3 attendues par les widgets phibuilder."""
+    def __init__(self, p: 'Palette'):
+        self.primary = p.primary
+        self.on_primary = p.on_primary
+        self.primary_container = p.primary_container
+        self.on_primary_container = p.text_strong
+        self.secondary = p.secondary
+        self.on_secondary = p.on_secondary
+        self.secondary_container = p.primary_container
+        self.on_secondary_container = p.text_strong
+        self.tertiary = p.tertiary
+        self.on_tertiary = p.on_tertiary
+        self.tertiary_container = p.tertiary_container
+        self.error = p.error
+        self.on_error = p.on_error
+        self.error_container = p.error_container
+        self.surface = p.surface
+        self.on_surface = p.text_strong
+        self.surface_variant = p.surface_variant
+        self.on_surface_variant = p.text_soft
+        self.background = p.background
+        self.on_background = p.text_strong
+        self.outline = p.outline
+        self.outline_variant = p.outline_variant
+        self.surface_container = p.surface_variant
+        self.surface_container_highest = p.surface_variant
+        self.surface_container_low = p.surface
+        self.inverse_surface = p.text_soft
+        self.inverse_on_surface = p.surface
+        self.inverse_primary = p.primary
 
 
 THEMES_CONFIG = [
@@ -169,6 +204,23 @@ class FontScale:
 
 
 @dataclass
+class ImageScale:
+    """Tailles standard des images, logos, icônes (Fibonacci + usage)."""
+    logo: int = 89           # SpacingToken.GIANT
+    logo_small: int = 55     # SpacingToken.HUGE
+    avatar: int = 150
+    photo: int = 150
+    add_btn: int = 100
+    icon_btn: int = 18
+    icon_menu: int = 18
+    icon_large: int = 32
+    profile_btn: int = 34
+    theme_btn: int = 34
+    refresh_btn: int = 34
+    field_height: int = 56   # M3TextField par défaut
+
+
+@dataclass
 class Theme:
     name: str
     label: str
@@ -197,14 +249,34 @@ class ThemeManager:
         self._theme: Theme = self._themes[self._active]
         self._app: Optional[QApplication] = None
         self._phibuilder: Optional[PhiBuilder] = None
+        self._phi_theme: Optional[PhiTheme] = None
+        self._image_scale = ImageScale()
 
     @property
     def theme(self) -> Theme:
         return self._theme
 
     @property
+    def phibuilder(self) -> Optional[PhiBuilder]:
+        return self._phibuilder
+
+    @property
     def palette(self) -> Palette:
         return self._theme.palette
+
+    @property
+    def phi_theme(self) -> PhiTheme:
+        """Thème phibuilder unifié avec les couleurs de la palette LarcCommon active."""
+        if self._phi_theme is None:
+            cfg = ThemeConfig(
+                seed_color=_SEED_MAP.get(self._active, "#1565C0"),
+                is_dark=_IS_DARK_MAP.get(self._active, False),
+                font_family="Segoe UI",
+            )
+            self._phi_theme = PhiTheme(cfg)
+            self._phi_theme.spacing = PhiScale(base_spacing=4)
+        self._phi_theme.colors = _LarcM3Colors(self._theme.palette)
+        return self._phi_theme
 
     @property
     def fonts(self) -> FontScale:
@@ -213,6 +285,10 @@ class ThemeManager:
     @property
     def design(self) -> DesignTokens:
         return self._theme.design
+
+    @property
+    def image(self) -> ImageScale:
+        return self._image_scale
 
     @property
     def active_name(self) -> str:
@@ -229,6 +305,7 @@ class ThemeManager:
         if name in self._themes:
             self._active = name
             self._theme = self._themes[name]
+            self._phi_theme = None
             self._sync_phibuilder()
             self._reapply()
             return True
@@ -418,6 +495,49 @@ class QssHelper:
             f"QPushButton#class_btn:hover {{ background: {p.primary_container}; }}"
             f"QPushButton#class_btn:checked {{ font-weight: bold; }}"
         )
+
+    @staticmethod
+    def login_qss(p) -> str:
+        """Style de login (Fibonacci via palettes LarcCommon).
+        Usage: self.setStyleSheet(QssHelper.login_qss(theme_manager.palette))"""
+        rd = 8
+        return f"""
+            QWidget#root {{ background: {p.background}; }}
+            QLabel {{ font-size: 13px; color: {p.text_strong}; background: transparent; }}
+            QTabWidget::pane {{
+                border: 1px solid {p.outline_variant}; background: {p.surface};
+                border-radius: {rd}px;
+            }}
+            QTabBar::tab          {{ padding: 8px 12px; font-size: 13px; }}
+            QTabBar::tab:selected {{
+                background: {p.surface}; border-bottom: 2px solid {p.primary};
+                color: {p.text_strong}; font-weight: bold;
+            }}
+            QTabBar::tab:!selected {{ background: {p.surface_variant}; color: {p.text_soft}; }}
+            QLineEdit {{
+                padding: 8px 8px; border: 1px solid {p.outline_variant};
+                border-radius: {rd}px; font-size: 13px; background: {p.surface};
+                color: {p.text_strong};
+            }}
+            QLineEdit:focus {{ border-color: {p.primary}; }}
+            QPushButton {{
+                padding: 8px 12px; border: none; border-radius: {rd}px;
+                font-size: 13px; font-weight: bold; color: white;
+            }}
+            QPushButton#btnIntra  {{ background: {p.primary}; }}
+            QPushButton#btnIntra:hover  {{ background: {p.active}; }}
+            QPushButton#btnIntra:disabled  {{ background: {p.inactive}; }}
+            QPushButton#btnGoogle {{ background: #DB4437; }}
+            QPushButton#btnGoogle:hover {{ background: #C53929; }}
+            QPushButton#btnGoogle:disabled {{ background: {p.inactive}; }}
+            QPushButton#btnCloud {{ background: {p.primary}; }}
+            QPushButton#btnCloud:hover {{ background: {p.active}; }}
+            QLabel#errLabel {{ color: {p.error}; font-size: 13px; }}
+            QLabel#hdrTitle {{ color: {p.text_strong}; font-size: 21px; font-weight: bold; }}
+            QLabel#hdrSub   {{ color: {p.text_soft}; font-size: 13px; }}
+            QLabel#infoLbl  {{ color: {p.text_soft}; font-size: 13px; }}
+            QLabel#formLbl {{ color: {p.text_strong}; font-size: 13px; }}
+        """
 
 
 theme_manager = ThemeManager()

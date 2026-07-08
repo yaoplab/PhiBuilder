@@ -9,6 +9,8 @@ class M3Label(QLabel):
         self._theme = theme; self._style_name = style
         self._update_style()
     def _update_style(self):
+        if self._theme is None:
+            return
         s: TypeStyle = getattr(self._theme.typo, self._style_name)
         self.setStyleSheet(f"M3Label {{ font-family: '{s.family}'; font-size: {s.size}px; font-weight: {s.weight}; letter-spacing: {s.letter_spacing}px; color: {self._theme.colors.on_surface}; }}")
     def set_style(self, name: str):

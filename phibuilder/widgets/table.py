@@ -19,6 +19,8 @@ class M3TableWidget(QTableWidget):
         v.setVisible(False)
         self._update_style()
     def _update_style(self):
+        if self._theme is None:
+            return
         c, s, t = self._theme.colors, self._theme.spacing, self._theme.typo
         self.setStyleSheet(f"""
 M3TableWidget {{ background-color: {c.surface}; border: 1px solid {c.outline}; border-radius: {s.spacing(SpacingToken.SM)}px;

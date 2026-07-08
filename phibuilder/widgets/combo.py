@@ -12,6 +12,8 @@ class M3ComboBox(QComboBox):
             self.addItems(items)
         self._update_style()
     def _update_style(self):
+        if self._theme is None:
+            return
         t, c, s = self._theme, self._theme.colors, self._theme.spacing
         p, r = s.spacing(SpacingToken.MD), s.spacing(SpacingToken.XS)
         self.setStyleSheet(f"""
