@@ -342,7 +342,7 @@ class LoginWindow(QWidget):
         if self._on_intranet_login:
             self._worker = _Worker(self._on_intranet_login, email, password, parent=self)
             self._worker.done.connect(
-                lambda r, ek=email.lower(): self._on_auth_done(r, ConnMode.INTRANET, ek))
+                lambda r, ek=email.lower(): self._on_cloud_done(r, ek))
             self._worker.start()
             return
 
@@ -361,14 +361,14 @@ class LoginWindow(QWidget):
         self._worker.done.connect(self._on_cloud_done)
         self._worker.start()
 
-    def _on_cloud_done(self, result):
+    def _on_cloud_done(self, result, rate_key='cloud'):
         self._set_busy(False)
         ok, res, err = result
         if not ok:
-            self._record_failure('cloud')
+            self._record_failure(rate_key)
             self._show_error(err or "Authentification \u00e9chou\u00e9e.")
             return
-        log(f"Connexion Cloud : {getattr(res, 'full_name', '?')}")
+        log(f"Connexion : {getattr(res, 'full_name', '?')}")
         self._on_success()
 
     def _open_main_window(self):
