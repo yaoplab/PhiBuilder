@@ -686,5 +686,6 @@
   "topbar.loading_stats": "⟳ Loading statistics...",
   "topbar.loading_students": "⟳ Loading students...",
   "kpi.period": "Period",
-  "topbar.restart_needed": "Restart the application to apply the language change."
+  "topbar.restart_needed": "Restart the application to apply the language change.",
+  "sec_main.restart_needed": "Restart the application to apply the language change."
 }
