@@ -336,92 +336,12 @@ class LoginWindow(QWidget):
         self._hide_error()
         self._set_busy(True)
 
-        ok = db.connect_intranet()
-        trace(f" _on_intranet: connect_intranet={ok}")
-        if not ok:
-            self._set_busy(False)
-            self._show_error(_("login.error.intranet"))
+        if self._on_intranet_login:
+            self._worker = _Worker(self._on_intranet_login, email, password, parent=self)
+            self._worker.done.connect(
+                lambda r, ek=email.lower(): self._on_auth_done(r, ConnMode.INTRANET, ek))
+            self._worker.start()
             return
-
-        conn = db.server_conn
-        trace(f" _on_intranet: server_conn={conn is not None}")
-        try:
-            cur = conn.cursor()
-            cur.execute(
-                "SELECT id, first_name, last_name, email, password, "
-                "type_director, type_coordonator, type_supervisor "
-                "FROM public.larcauth_aecuser WHERE email = %s",
-                (email,)
-            )
-            row = cur.fetchone()
-            if row is None:
-                self._set_busy(False)
-                self._show_error(_("login.error.user_not_found"))
-                db.disconnect_all()
-                return
-
-            user_id, first_name, last_name, email, pwd_hash, is_dir, is_coord, is_sup = row
-
-            pass_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
-            if pwd_hash and pwd_hash != pass_hash:
-                self._set_busy(False)
-                self._show_error(_("login.error.wrong_password"))
-                db.disconnect_all()
-                return
-
-            if not (is_dir or is_coord or is_sup):
-                self._set_busy(False)
-                self._show_error(
-                    _("login.error.restricted"))
-                db.disconnect_all()
-                return
-
-            if is_dir: role = UserRole.ADMIN
-            elif is_coord: role = UserRole.COORD
-            else: role = UserRole.SUPERVISEUR
-
-            import os
-            # Lire la langue preferee de l'utilisateur
-            user_lang_id = 2
-            try:
-                cur.execute("SELECT fk_language FROM larcauth_aecuser WHERE id = %s", (user_id,))
-                r = cur.fetchone()
-                if r: user_lang_id = int(r[0])
-            except: pass
-            user_lang = 'en' if user_lang_id == 1 else 'fr'
-            lang = os.environ.get('LARC_LANG', user_lang)
-            trans = Translator.instance(lang)
-            trans.reload(Translator.l10n_dir())
-
-            session.user_id = user_id
-            session.email = email
-            session.full_name = f"{first_name} {last_name}"
-            session.role = role
-            session.conn_mode = ConnMode.INTRANET
-            session.is_authenticated = True
-            session.fk_language = user_lang_id
-
-            try:
-                cur.execute("""
-                    SELECT t.id, t.label FROM larcauth_term t, larcauth_academicyear ay
-                    WHERE ay.s_id = 1 AND t.trim = ay.current_term_number
-                    LIMIT 1
-                """)
-                r = cur.fetchone()
-                if r:
-                    session.term_id = int(r[0])
-                    session.term_label = r[1]
-            except Exception:
-                pass
-
-            log(f"Connexion Intranet : {session.full_name} ({role.value})")
-            self._on_success()
-
-        except Exception as e:
-            self._set_busy(False)
-            log(f"_on_intranet: {e}")
-            self._show_error(str(e))
-            db.disconnect_all()
 
     def _on_cloud(self):
         try:
@@ -431,7 +351,10 @@ class LoginWindow(QWidget):
             return
         self._hide_error()
         self._set_busy(True)
-        self._worker = _Worker(OAuth2Manager.authenticate, parent=self)
+        if self._on_cloud_login:
+            self._worker = _Worker(self._on_cloud_login, parent=self)
+        else:
+            self._worker = _Worker(OAuth2Manager.authenticate, parent=self)
         self._worker.done.connect(self._on_cloud_done)
         self._worker.start()
 
