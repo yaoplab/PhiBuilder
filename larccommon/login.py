@@ -365,22 +365,7 @@ class LoginWindow(QWidget):
             self._record_failure('cloud')
             self._show_error(err or "Authentification \u00e9chou\u00e9e.")
             return
-
-        if res.role not in (UserRole.SUPERVISEUR, UserRole.COORD, UserRole.ADMIN):
-            self._show_error("Acc\u00e8s non autoris\u00e9 pour ce compte.")
-            return
-
-        session.user_id = res.user_id
-        session.email = res.email
-        session.full_name = res.full_name
-        session.role = res.role
-        session.conn_mode = ConnMode.CLOUD
-        session.is_authenticated = True
-        session.term_id = res.term_id
-        session.term_label = res.term_label
-        session.fk_language = res.fk_language
-
-        log(f"Connexion Cloud : {session.full_name} ({res.role.value})")
+        log(f"Connexion Cloud : {getattr(res, 'full_name', '?')}")
         self._on_success()
 
     def _open_main_window(self):
