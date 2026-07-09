@@ -68,9 +68,12 @@ class LoginWindow(QWidget):
         if entry['count'] >= 5:
             entry['until'] = time.time() + 30
 
-    def __init__(self, on_success=None, title_prefix=None):
+    def __init__(self, on_success=None, title_prefix=None,
+                 on_intranet_login=None, on_cloud_login=None):
         super().__init__()
         self._on_success = on_success or self._open_main_window
+        self._on_intranet_login = on_intranet_login
+        self._on_cloud_login = on_cloud_login
         self._worker: Optional[_Worker] = None
         self._tabs_forced = False
         import os
