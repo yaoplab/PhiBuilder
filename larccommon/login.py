@@ -69,9 +69,12 @@ class LoginWindow(QWidget):
             entry['until'] = time.time() + 30
 
     def __init__(self, on_success=None, title_prefix=None,
+                 subtitle=None,
                  on_intranet_login=None, on_cloud_login=None):
         super().__init__()
         self._on_success = on_success or self._open_main_window
+        self._title_prefix = title_prefix or _("app.title.superviseur")
+        self._subtitle = subtitle or _("login.subtitle.superviseur")
         self._on_intranet_login = on_intranet_login
         self._on_cloud_login = on_cloud_login
         self._worker: Optional[_Worker] = None
@@ -80,7 +83,7 @@ class LoginWindow(QWidget):
         lang = os.environ.get('LARC_LANG', 'fr')
         trans = Translator.instance(lang)
         trans.load_dir(Translator.l10n_dir())
-        title = (title_prefix or _("app.title.superviseur")) + " - " + _("login.title")
+        title = self._title_prefix + " - " + _("login.title")
         self.setWindowTitle(title)
 
         ok_intra = db.connect_intranet()
@@ -178,13 +181,13 @@ class LoginWindow(QWidget):
         outer.addWidget(self._logo_label)
         outer.addSpacing(21)
 
-        title = QLabel("LarcSuperviseur")
+        title = QLabel(self._title_prefix)
         title.setObjectName("hdrTitle")
         title.setAlignment(Qt.AlignCenter)
         outer.addWidget(title)
         outer.addSpacing(8)
 
-        sub = QLabel("Supervision de la vie scolaire")
+        sub = QLabel(self._subtitle)
         sub.setObjectName("hdrSub")
         sub.setAlignment(Qt.AlignCenter)
         outer.addWidget(sub)
