@@ -41,6 +41,12 @@ class _Worker(QThread):
 
 
 class LoginWindow(QWidget):
+    """Fenêtre de connexion partagée — utilisée par LarcSuperviseur, LarcSecretaire, LarcHub.
+
+    Usage:
+        window = LoginWindow(on_success=lambda: open_main_window())
+        window.show()
+    """
 
     _login_attempts: dict[str, dict] = {}
 
@@ -62,17 +68,17 @@ class LoginWindow(QWidget):
         if entry['count'] >= 5:
             entry['until'] = time.time() + 30
 
-    def __init__(self):
+    def __init__(self, on_success=None, title_prefix=None):
         super().__init__()
+        self._on_success = on_success or self._open_main_window
         self._worker: Optional[_Worker] = None
         self._tabs_forced = False
         import os
         lang = os.environ.get('LARC_LANG', 'fr')
         trans = Translator.instance(lang)
         trans.load_dir(Translator.l10n_dir())
-        trace(f" LoginWindow.__init__: langue={lang}")
-        self.setWindowTitle(_("app.title.superviseur") + " - " + _("login.title"))
-        trace(f" LoginWindow.__init__: démarre")
+        title = (title_prefix or _("app.title.superviseur")) + " - " + _("login.title")
+        self.setWindowTitle(title)
 
         ok_intra = db.connect_intranet()
         trace(f" LoginWindow.__init__: connect_intranet={ok_intra}")
@@ -406,9 +412,7 @@ class LoginWindow(QWidget):
                 pass
 
             log(f"Connexion Intranet : {session.full_name} ({role.value})")
-            trace(f" _on_intranet: session OK, appel _open_main_window")
-            self._open_main_window()
-            trace(f" _open_main_window terminé")
+            self._on_success()
 
         except Exception as e:
             self._set_busy(False)
@@ -451,7 +455,7 @@ class LoginWindow(QWidget):
         session.fk_language = res.fk_language
 
         log(f"Connexion Cloud : {session.full_name} ({res.role.value})")
-        self._open_main_window()
+        self._on_success()
 
     def _open_main_window(self):
         from LarcSuperviseur.common.photos import get_uncached_ids, PhotoPreloader
