@@ -419,6 +419,7 @@
   "sec_main.loaded": "Données chargées.",
   "sec_main.loading_error": "Erreur de chargement : {e}",
   "sec_main.logout": "Déconnexion",
+  "sec_main.preferences": "Préférences",
   "sec_main.lycee": "Lycée",
   "sec_main.nav_title": "Navigation",
   "sec_main.network_cloud": "Cloud ●",

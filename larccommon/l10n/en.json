@@ -419,6 +419,7 @@
   "sec_main.loaded": "Data loaded.",
   "sec_main.loading_error": "Loading error: {e}",
   "sec_main.logout": "Logout",
+  "sec_main.preferences": "Preferences",
   "sec_main.lycee": "High School",
   "sec_main.nav_title": "Navigation",
   "sec_main.network_cloud": "Cloud ●",

@@ -3,8 +3,15 @@ import hashlib
 from typing import Optional
 import time
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QPushButton, QLineEdit,
-    QMessageBox, QApplication, QTabWidget, QCheckBox,
+    QWidget,
+    QVBoxLayout,
+    QLabel,
+    QPushButton,
+    QLineEdit,
+    QMessageBox,
+    QApplication,
+    QTabWidget,
+    QCheckBox,
     QProgressDialog,
 )
 from PySide6.QtCore import Qt, QThread, Signal, QTimer, QEvent
@@ -21,7 +28,9 @@ from larccommon.l10n import Translator, _
 try:
     from LarcSuperviseur.common.trace import trace
 except ImportError:
-    def trace(msg): pass
+
+    def trace(msg):
+        pass
 
 
 class _Worker(QThread):
@@ -54,23 +63,28 @@ class LoginWindow(QWidget):
     def _check_rate_limit(cls, key: str) -> bool:
         now = time.time()
         entry = cls._login_attempts.get(key)
-        if entry and entry['until'] > now:
-            remaining = int(entry['until'] - now)
+        if entry and entry["until"] > now:
+            remaining = int(entry["until"] - now)
             raise RuntimeError(f"Trop de tentatives. R\u00e9essayez dans {remaining}s.")
-        if entry and entry['until'] <= now:
+        if entry and entry["until"] <= now:
             cls._login_attempts.pop(key, None)
         return True
 
     @classmethod
     def _record_failure(cls, key: str):
-        entry = cls._login_attempts.setdefault(key, {'count': 0, 'until': 0})
-        entry['count'] += 1
-        if entry['count'] >= 5:
-            entry['until'] = time.time() + 30
+        entry = cls._login_attempts.setdefault(key, {"count": 0, "until": 0})
+        entry["count"] += 1
+        if entry["count"] >= 5:
+            entry["until"] = time.time() + 30
 
-    def __init__(self, on_success=None, title_prefix=None,
-                 subtitle=None,
-                 on_intranet_login=None, on_cloud_login=None):
+    def __init__(
+        self,
+        on_success=None,
+        title_prefix=None,
+        subtitle=None,
+        on_intranet_login=None,
+        on_cloud_login=None,
+    ):
         super().__init__()
         self._on_success = on_success or self._open_main_window
         self._title_prefix = title_prefix or _("app.title.superviseur")
@@ -80,7 +94,8 @@ class LoginWindow(QWidget):
         self._worker: Optional[_Worker] = None
         self._tabs_forced = False
         import os
-        lang = os.environ.get('LARC_LANG', 'fr')
+
+        lang = os.environ.get("LARC_LANG", "fr")
         trans = Translator.instance(lang)
         trans.load_dir(Translator.l10n_dir())
         title = self._title_prefix + " - " + _("login.title")
@@ -165,8 +180,12 @@ class LoginWindow(QWidget):
         outer.setContentsMargins(34, 21, 34, 21)
         outer.setSpacing(0)
 
-        logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                                'LarcSuperviseur', 'img', 'logoAEC.png')
+        logo_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            "LarcSuperviseur",
+            "img",
+            "logoAEC.png",
+        )
         self._logo_label = QLabel()
         if os.path.exists(logo_path):
             pix = QPixmap(logo_path)
@@ -341,14 +360,13 @@ class LoginWindow(QWidget):
 
         if self._on_intranet_login:
             self._worker = _Worker(self._on_intranet_login, email, password, parent=self)
-            self._worker.done.connect(
-                lambda r, ek=email.lower(): self._on_cloud_done(r, ek))
+            self._worker.done.connect(lambda r, ek=email.lower(): self._on_cloud_done(r, ek))
             self._worker.start()
             return
 
     def _on_cloud(self):
         try:
-            self._check_rate_limit('cloud')
+            self._check_rate_limit("cloud")
         except RuntimeError as e:
             self._show_error(str(e))
             return
@@ -361,7 +379,7 @@ class LoginWindow(QWidget):
         self._worker.done.connect(self._on_cloud_done)
         self._worker.start()
 
-    def _on_cloud_done(self, result, rate_key='cloud'):
+    def _on_cloud_done(self, result, rate_key="cloud"):
         self._set_busy(False)
         ok, res, err = result
         if not ok:
@@ -370,6 +388,7 @@ class LoginWindow(QWidget):
             return
         log(f"Connexion : {getattr(res, 'full_name', '?')}")
         self._on_success()
+        self.close()
 
     def _open_main_window(self):
         from LarcSuperviseur.common.photos import get_uncached_ids, PhotoPreloader
@@ -378,20 +397,18 @@ class LoginWindow(QWidget):
         student_ids = get_uncached_ids()
         if student_ids:
             progress = QProgressDialog(
-                "Pr\u00e9paration des photos...", "Annuler", 0, len(student_ids), self)
+                "Pr\u00e9paration des photos...", "Annuler", 0, len(student_ids), self
+            )
             progress.setWindowTitle("LarcSuperviseur")
             progress.setWindowModality(Qt.WindowModal)
             progress.setMinimumDuration(0)
             progress.setValue(0)
 
             preloader = PhotoPreloader(student_ids, self)
-            preloader.progress.connect(
-                lambda cur, total, sid: progress.setValue(cur))
-            preloader.done.connect(
-                lambda loaded, failed: progress.close())
+            preloader.progress.connect(lambda cur, total, sid: progress.setValue(cur))
+            preloader.done.connect(lambda loaded, failed: progress.close())
             progress.canceled.connect(preloader.cancel)
-            preloader.finished.connect(
-                lambda: self._do_open_main_window(MainWindow))
+            preloader.finished.connect(lambda: self._do_open_main_window(MainWindow))
             preloader.finished.connect(preloader.deleteLater)
             preloader.start()
             self._preloader = preloader
