@@ -428,8 +428,8 @@ class ThemeManager:
     def font_size(self, base: int) -> int:
         return max(7, int(base * self._theme.fonts.multiplier))
 
-    def font(self, base: int, weight=QFont.Normal, family="Segoe UI") -> QFont:
-        return QFont(family, self.font_size(base), weight)
+    def font(self, base: int, weight=QFont.Weight.Normal, family="Segoe UI") -> QFont:
+        return QFont(family, self.font_size(base), int(weight))
 
     def bind(self, app: QApplication) -> None:
         self._app = app
