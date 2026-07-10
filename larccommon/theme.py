@@ -1,16 +1,19 @@
 from dataclasses import dataclass, field
 from typing import Optional
+
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QApplication
 
 from phibuilder import PhiBuilder
-from phibuilder.theme import Theme as PhiTheme, ThemeConfig
-from phibuilder.phi.scale import PhiScale, SpacingToken
+from phibuilder.phi.scale import PhiScale
+from phibuilder.theme import Theme as PhiTheme
+from phibuilder.theme import ThemeConfig
 
 
 class _LarcM3Colors:
     """Mappe Palette (LarcCommon) vers les propriétés M3 attendues par les widgets phibuilder."""
-    def __init__(self, p: 'Palette'):
+
+    def __init__(self, p: "Palette"):
         self.primary = p.primary
         self.on_primary = p.on_primary
         self.primary_container = p.primary_container
@@ -42,10 +45,10 @@ class _LarcM3Colors:
 
 
 THEMES_CONFIG = [
-    ("blue",    "Bleu",       "#1565C0", False),
-    ("dark",    "Dark",       "#212121", True),
-    ("sobre",   "Sobre",      "#37474F", False),
-    ("contrast","Contrasté",  "#0033A0", False),
+    ("blue", "Bleu", "#1565C0", False),
+    ("dark", "Dark", "#212121", True),
+    ("sobre", "Sobre", "#37474F", False),
+    ("contrast", "Contrasté", "#0033A0", False),
 ]
 
 _SEED_MAP = {k: s for k, _, s, _ in THEMES_CONFIG}
@@ -53,18 +56,29 @@ _IS_DARK_MAP = {k: d for k, _, _, d in THEMES_CONFIG}
 
 _THEME_DESIGN = {
     "dark": dict(
-        radius=6, radius_lg=10, radius_xl=14,
-        field_pad_v=10, field_pad_h=14,
-        btn_sm_pad_v=8, btn_sm_pad_h=18,
-        btn_pad_v=10, btn_pad_h=22,
+        radius=6,
+        radius_lg=10,
+        radius_xl=14,
+        field_pad_v=10,
+        field_pad_h=14,
+        btn_sm_pad_v=8,
+        btn_sm_pad_h=18,
+        btn_pad_v=10,
+        btn_pad_h=22,
     ),
     "contrast": dict(
-        radius=6, radius_lg=10, radius_xl=14,
-        spacing=8, margin=20,
-        field_pad_v=10, field_pad_h=16,
+        radius=6,
+        radius_lg=10,
+        radius_xl=14,
+        spacing=8,
+        margin=20,
+        field_pad_v=10,
+        field_pad_h=16,
         label_pad_v=8,
-        btn_pad_v=10, btn_pad_h=24,
-        btn_sm_pad_v=8, btn_sm_pad_h=18,
+        btn_pad_v=10,
+        btn_pad_h=24,
+        btn_sm_pad_v=8,
+        btn_sm_pad_h=18,
         btn_border=2,
     ),
 }
@@ -72,42 +86,45 @@ _THEME_DESIGN = {
 
 @dataclass
 class Palette:
-    primary: str = '#1565C0'
-    on_primary: str = '#FFFFFF'
-    primary_container: str = '#BBDEFB'
-    secondary: str = '#00897B'
-    on_secondary: str = '#FFFFFF'
-    secondary_container: str = '#B2DFDB'
-    tertiary: str = '#E65100'
-    on_tertiary: str = '#FFFFFF'
-    tertiary_container: str = '#FFCC80'
-    error: str = '#C62828'
-    on_error: str = '#FFFFFF'
-    error_container: str = '#FFCDD2'
-    surface: str = '#F5F7FA'
-    surface_variant: str = '#E8EAF6'
-    background: str = '#F5F7FA'
-    outline: str = '#546E7A'
-    outline_variant: str = '#B0BEC5'
-    text_strong: str = '#1B1B1F'
-    text_soft: str = '#455A64'
-    text_disabled: str = '#90A4AE'
-    success: str = '#2E7D32'
-    card_bg: str = '#FFFFFF'
-    card_hover: str = '#E3F2FD'
-    header_bg: str = '#1565C0'
-    header_text: str = '#FFFFFF'
-    active: str = '#1565C0'
-    inactive: str = '#90A4AE'
-    border: str = '#B0BEC5'
-    border_light: str = '#E0E0E0'
-    button_primary: str = '#1565C0'
-    button_danger: str = '#C62828'
-    button_accent: str = '#00897B'
-    button_success: str = '#2E7D32'
-    text_secondary: str = '#546E7A'
-    accent: str = '#00897B'
-    danger: str = '#C62828'
+    primary: str = "#1565C0"
+    on_primary: str = "#FFFFFF"
+    primary_container: str = "#BBDEFB"
+    secondary: str = "#00897B"
+    on_secondary: str = "#FFFFFF"
+    secondary_container: str = "#B2DFDB"
+    tertiary: str = "#E65100"
+    on_tertiary: str = "#FFFFFF"
+    tertiary_container: str = "#FFCC80"
+    error: str = "#C62828"
+    on_error: str = "#FFFFFF"
+    error_container: str = "#FFCDD2"
+    surface: str = "#F5F7FA"
+    surface_variant: str = "#E8EAF6"
+    background: str = "#F5F7FA"
+    outline: str = "#546E7A"
+    outline_variant: str = "#B0BEC5"
+    text_strong: str = "#1B1B1F"
+    text_soft: str = "#455A64"
+    text_disabled: str = "#90A4AE"
+    success: str = "#2E7D32"
+    card_bg: str = "#FFFFFF"
+    card_hover: str = "#E3F2FD"
+    header_bg: str = "#1565C0"
+    header_text: str = "#FFFFFF"
+    active: str = "#1565C0"
+    inactive: str = "#90A4AE"
+    border: str = "#B0BEC5"
+    border_light: str = "#E0E0E0"
+    button_primary: str = "#1565C0"
+    button_danger: str = "#C62828"
+    button_accent: str = "#00897B"
+    button_success: str = "#2E7D32"
+    text_secondary: str = "#546E7A"
+    accent: str = "#00897B"
+    danger: str = "#C62828"
+    primary_light: str = "#BBDEFB"
+    primary_dark: str = "#0D47A1"
+    selection: str = "#1565C0"
 
 
 @dataclass
@@ -130,65 +147,160 @@ class DesignTokens:
 
 _THEME_PALETTES = {
     "blue": Palette(
-        primary='#1565C0', on_primary='#FFFFFF', primary_container='#BBDEFB',
-        secondary='#00897B', on_secondary='#FFFFFF', secondary_container='#B2DFDB',
-        tertiary='#E65100', on_tertiary='#FFFFFF', tertiary_container='#FFCC80',
-        error='#C62828', on_error='#FFFFFF', error_container='#FFCDD2', success='#2E7D32',
-        card_bg='#FFFFFF', card_hover='#E3F2FD',
-        header_bg='#1565C0', header_text='#FFFFFF',
-        active='#1565C0', inactive='#90A4AE',
-        border='#B0BEC5', border_light='#E0E0E0',
-        button_primary='#1565C0', button_danger='#C62828', button_accent='#00897B',
-        button_success='#2E7D32', text_secondary='#546E7A',
-        accent='#00897B', danger='#C62828',
+        primary="#1565C0",
+        on_primary="#FFFFFF",
+        primary_container="#BBDEFB",
+        secondary="#00897B",
+        on_secondary="#FFFFFF",
+        secondary_container="#B2DFDB",
+        tertiary="#E65100",
+        on_tertiary="#FFFFFF",
+        tertiary_container="#FFCC80",
+        error="#C62828",
+        on_error="#FFFFFF",
+        error_container="#FFCDD2",
+        success="#2E7D32",
+        card_bg="#FFFFFF",
+        card_hover="#E3F2FD",
+        header_bg="#1565C0",
+        header_text="#FFFFFF",
+        active="#1565C0",
+        inactive="#90A4AE",
+        border="#B0BEC5",
+        border_light="#E0E0E0",
+        button_primary="#1565C0",
+        button_danger="#C62828",
+        button_accent="#00897B",
+        button_success="#2E7D32",
+        text_secondary="#546E7A",
+        accent="#00897B",
+        danger="#C62828",
+        primary_light="#BBDEFB",
+        primary_dark="#0D47A1",
+        selection="#1565C0",
     ),
     "dark": Palette(
-        primary='#64B5F6', on_primary='#0D2137', primary_container='#1E3A5F',
-        secondary='#81C784', on_secondary='#1B3A1B', secondary_container='#2E5C2E',
-        tertiary='#FFB74D', on_tertiary='#3E2C00', tertiary_container='#5C4300',
-        error='#EF9A9A', on_error='#5C1A1A', error_container='#7C2020', success='#81C784',
-        surface='#1E1E1E', surface_variant='#2D2D2D',
-        background='#121212', outline='#616161', outline_variant='#424242',
-        text_strong='#E0E0E0', text_soft='#9E9E9E', text_disabled='#616161',
-        card_bg='#252525', card_hover='#333333',
-        header_bg='#1E3A5F', header_text='#64B5F6',
-        active='#64B5F6', inactive='#616161',
-        border='#424242', border_light='#383838',
-        button_primary='#64B5F6', button_danger='#EF9A9A', button_accent='#81C784',
-        button_success='#81C784', text_secondary='#9E9E9E',
-        accent='#81C784', danger='#EF9A9A',
+        primary="#64B5F6",
+        on_primary="#0D2137",
+        primary_container="#1E3A5F",
+        secondary="#81C784",
+        on_secondary="#1B3A1B",
+        secondary_container="#2E5C2E",
+        tertiary="#FFB74D",
+        on_tertiary="#3E2C00",
+        tertiary_container="#5C4300",
+        error="#EF9A9A",
+        on_error="#5C1A1A",
+        error_container="#7C2020",
+        success="#81C784",
+        surface="#1E1E1E",
+        surface_variant="#2D2D2D",
+        background="#121212",
+        outline="#616161",
+        outline_variant="#424242",
+        text_strong="#E0E0E0",
+        text_soft="#9E9E9E",
+        text_disabled="#616161",
+        card_bg="#252525",
+        card_hover="#333333",
+        header_bg="#1E3A5F",
+        header_text="#64B5F6",
+        active="#64B5F6",
+        inactive="#616161",
+        border="#424242",
+        border_light="#383838",
+        button_primary="#64B5F6",
+        button_danger="#EF9A9A",
+        button_accent="#81C784",
+        button_success="#81C784",
+        text_secondary="#9E9E9E",
+        accent="#81C784",
+        danger="#EF9A9A",
+        primary_light="#1E3A5F",
+        primary_dark="#0D2137",
+        selection="#64B5F6",
     ),
     "sobre": Palette(
-        primary='#37474F', on_primary='#FFFFFF', primary_container='#CFD8DC',
-        secondary='#546E7A', on_secondary='#FFFFFF', secondary_container='#B0BEC5',
-        tertiary='#78909C', on_tertiary='#FFFFFF', tertiary_container='#CFD8DC',
-        error='#BF360C', on_error='#FFFFFF', error_container='#FFCCBC', success='#33691E',
-        surface='#FAFAFA', surface_variant='#EEEEEE',
-        background='#FFFFFF', outline='#BDBDBD', outline_variant='#E0E0E0',
-        text_strong='#212121', text_soft='#616161', text_disabled='#9E9E9E',
-        card_bg='#FFFFFF', card_hover='#F5F5F5',
-        header_bg='#37474F', header_text='#FFFFFF',
-        active='#37474F', inactive='#BDBDBD',
-        border='#E0E0E0', border_light='#EEEEEE',
-        button_primary='#37474F', button_danger='#BF360C', button_accent='#546E7A',
-        button_success='#33691E', text_secondary='#616161',
-        accent='#546E7A', danger='#BF360C',
+        primary="#37474F",
+        on_primary="#FFFFFF",
+        primary_container="#CFD8DC",
+        secondary="#546E7A",
+        on_secondary="#FFFFFF",
+        secondary_container="#B0BEC5",
+        tertiary="#78909C",
+        on_tertiary="#FFFFFF",
+        tertiary_container="#CFD8DC",
+        error="#BF360C",
+        on_error="#FFFFFF",
+        error_container="#FFCCBC",
+        success="#33691E",
+        surface="#FAFAFA",
+        surface_variant="#EEEEEE",
+        background="#FFFFFF",
+        outline="#BDBDBD",
+        outline_variant="#E0E0E0",
+        text_strong="#212121",
+        text_soft="#616161",
+        text_disabled="#9E9E9E",
+        card_bg="#FFFFFF",
+        card_hover="#F5F5F5",
+        header_bg="#37474F",
+        header_text="#FFFFFF",
+        active="#37474F",
+        inactive="#BDBDBD",
+        border="#E0E0E0",
+        border_light="#EEEEEE",
+        button_primary="#37474F",
+        button_danger="#BF360C",
+        button_accent="#546E7A",
+        button_success="#33691E",
+        text_secondary="#616161",
+        accent="#546E7A",
+        danger="#BF360C",
+        primary_light="#CFD8DC",
+        primary_dark="#263238",
+        selection="#37474F",
     ),
     "contrast": Palette(
-        primary='#0033A0', on_primary='#FFFFFF', primary_container='#80B3FF',
-        secondary='#005A9E', on_secondary='#FFFFFF', secondary_container='#80D0FF',
-        tertiary='#C62828', on_tertiary='#FFFFFF', tertiary_container='#FFB3B3',
-        error='#B71C1C', on_error='#FFFFFF', error_container='#FFCDD2', success='#1B5E20',
-        surface='#FFFFFF', surface_variant='#D6E8FF',
-        background='#FFFFFF', outline='#000000', outline_variant='#333333',
-        text_strong='#000000', text_soft='#1A1A1A', text_disabled='#555555',
-        card_bg='#FFFFFF', card_hover='#B3D4FF',
-        header_bg='#0033A0', header_text='#FFFFFF',
-        active='#0033A0', inactive='#666666',
-        border='#000000', border_light='#333333',
-        button_primary='#0033A0', button_danger='#B71C1C', button_accent='#005A9E',
-        button_success='#1B5E20', text_secondary='#1A1A1A',
-        accent='#005A9E', danger='#B71C1C',
+        primary="#0033A0",
+        on_primary="#FFFFFF",
+        primary_container="#80B3FF",
+        secondary="#005A9E",
+        on_secondary="#FFFFFF",
+        secondary_container="#80D0FF",
+        tertiary="#C62828",
+        on_tertiary="#FFFFFF",
+        tertiary_container="#FFB3B3",
+        error="#B71C1C",
+        on_error="#FFFFFF",
+        error_container="#FFCDD2",
+        success="#1B5E20",
+        surface="#FFFFFF",
+        surface_variant="#D6E8FF",
+        background="#FFFFFF",
+        outline="#000000",
+        outline_variant="#333333",
+        text_strong="#000000",
+        text_soft="#1A1A1A",
+        text_disabled="#555555",
+        card_bg="#FFFFFF",
+        card_hover="#B3D4FF",
+        header_bg="#0033A0",
+        header_text="#FFFFFF",
+        active="#0033A0",
+        inactive="#666666",
+        border="#000000",
+        border_light="#333333",
+        button_primary="#0033A0",
+        button_danger="#B71C1C",
+        button_accent="#005A9E",
+        button_success="#1B5E20",
+        text_secondary="#1A1A1A",
+        accent="#005A9E",
+        danger="#B71C1C",
+        primary_light="#80B3FF",
+        primary_dark="#002171",
+        selection="#0033A0",
     ),
 }
 
@@ -206,8 +318,9 @@ class FontScale:
 @dataclass
 class ImageScale:
     """Tailles standard des images, logos, icônes (Fibonacci + usage)."""
-    logo: int = 89           # SpacingToken.GIANT
-    logo_small: int = 55     # SpacingToken.HUGE
+
+    logo: int = 89  # SpacingToken.GIANT
+    logo_small: int = 55  # SpacingToken.HUGE
     avatar: int = 150
     photo: int = 150
     add_btn: int = 100
@@ -217,7 +330,7 @@ class ImageScale:
     profile_btn: int = 34
     theme_btn: int = 34
     refresh_btn: int = 34
-    field_height: int = 56   # M3TextField par défaut
+    field_height: int = 56  # M3TextField par défaut
 
 
 @dataclass
@@ -230,6 +343,7 @@ class Theme:
 
 
 _BUILTIN_THEMES: dict[str, Theme] = {}
+
 
 def _init_themes():
     if _BUILTIN_THEMES:
@@ -245,7 +359,7 @@ class ThemeManager:
     def __init__(self):
         _init_themes()
         self._themes = _BUILTIN_THEMES
-        self._active: str = 'blue'
+        self._active: str = "blue"
         self._theme: Theme = self._themes[self._active]
         self._app: Optional[QApplication] = None
         self._phibuilder: Optional[PhiBuilder] = None
@@ -314,7 +428,7 @@ class ThemeManager:
     def font_size(self, base: int) -> int:
         return max(7, int(base * self._theme.fonts.multiplier))
 
-    def font(self, base: int, weight=QFont.Normal, family='Segoe UI') -> QFont:
+    def font(self, base: int, weight=QFont.Normal, family="Segoe UI") -> QFont:
         return QFont(family, self.font_size(base), weight)
 
     def bind(self, app: QApplication) -> None:
@@ -434,12 +548,12 @@ class QssHelper:
         return (
             f"QPushButton#period_btn {{ min-width: 89px; max-width: 89px; height: 34px; "
             f"font-size: 13px; font-weight: normal; "
-            f"border: {d.btn_border*2}px solid transparent; border-radius: {d.radius}px; "
+            f"border: {d.btn_border * 2}px solid transparent; border-radius: {d.radius}px; "
             f"padding: 0; background: {p.surface_variant}; color: {p.text_strong}; }}"
             f"QPushButton#period_btn:hover {{ background: {p.primary_container}; "
             f"border-color: {p.primary}; }}"
             f"QPushButton#period_btn:checked {{ background: {p.primary}; color: {p.on_primary}; "
-            f"border: {d.btn_border*2}px solid {p.primary}; font-weight: bold; }}"
+            f"border: {d.btn_border * 2}px solid {p.primary}; font-weight: bold; }}"
         )
 
     @staticmethod
@@ -459,7 +573,7 @@ class QssHelper:
             f"QLabel#kpi_value {{ font-size: {s(24)}px; font-weight: bold; color: {p.primary}; }}"
             f"QLabel#kpi_label {{ font-size: {s(10)}px; color: {p.text_soft}; }}"
             f"QFrame#kpi_small {{ background: {p.surface_variant}; "
-            f"border-radius: {d.radius_lg}px; padding: {d.spacing//3}px; }}"
+            f"border-radius: {d.radius_lg}px; padding: {d.spacing // 3}px; }}"
         )
 
     @staticmethod
@@ -475,14 +589,14 @@ class QssHelper:
             f"QPushButton#phi_btn {{ font-size: 18px; border: 1px solid {p.outline_variant}; "
             f"border-radius: {d.radius}px; background: {p.surface_variant}; color: {p.text_strong}; }}"
             f"QPushButton#phi_btn:checked {{ background: {p.primary}; color: {p.on_primary}; "
-            f"border: {d.btn_border*2}px solid {p.primary}; }}"
+            f"border: {d.btn_border * 2}px solid {p.primary}; }}"
         )
 
     @staticmethod
     def section_btn(p, d, s) -> str:
         return (
             f"QPushButton#section_btn {{ background: transparent; border: none; font-weight: bold; "
-            f"text-align: left; padding: {d.spacing//3}px {d.spacing}px; "
+            f"text-align: left; padding: {d.spacing // 3}px {d.spacing}px; "
             f"font-size: {s(12)}px; color: {p.text_strong}; }}"
         )
 
@@ -490,7 +604,7 @@ class QssHelper:
     def class_btn(p, d, s) -> str:
         return (
             f"QPushButton#class_btn {{ border: none; border-radius: {d.radius}px; "
-            f"text-align: left; padding: {d.spacing//2}px {d.field_pad_h}px; "
+            f"text-align: left; padding: {d.spacing // 2}px {d.field_pad_h}px; "
             f"font-size: {s(10)}px; }}"
             f"QPushButton#class_btn:hover {{ background: {p.primary_container}; }}"
             f"QPushButton#class_btn:checked {{ font-weight: bold; }}"
